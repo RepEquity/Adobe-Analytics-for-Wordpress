@@ -1,0 +1,79 @@
+.wrap h1 {
+  background: transparent url('adobe-analytics.png') no-repeat left center;
+  line-height: 80px;
+  text-indent: 100px;
+  font-family: HelveticaNeue-Light,"Helvetica Neue Light","Helvetica Neue",sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin: .67em 0 0;
+}
+.wrap form p {
+  font-size: 11px;
+  margin: 0.5em 0 2em;
+  line-height: 1em;
+}
+.wrap form label {
+  width: 300px;
+  display: block;
+  float: left;
+}
+
+#main {
+  width: 700px;
+  float: left;
+}
+aside {
+  margin-left: 40px;
+  width: 250px;
+  float: left;
+}
+.sponsorship a {
+  display: block;
+}
+
+/* tabbed page controller */
+section {
+  display: none;
+  max-width: 800px;
+}
+section.active {
+  display: block;
+}
+
+.nav-tab-wrapper {
+  font-size: 23px;
+  padding: 0;
+  line-height: 29px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding-bottom: 0;
+  border-bottom-color: #ccc;
+  margin: 10px;
+}
+.nav-tab {
+  padding: 0;
+}
+.nav-tab a {
+  padding: 4px 10px 6px;
+  font-weight: 200;
+  font-size: 20px;
+  line-height: 24px;
+  display: block;
+  text-decoration: none;
+  color: #aaa;
+}
+.nav-tab .active {
+  border-bottom: 1px solid #fff;
+  color: #464646;
+}
+
+/* settings form */
+#settings form .custom_variables {
+  display: none;
+}
+
+
+
+
+
+
