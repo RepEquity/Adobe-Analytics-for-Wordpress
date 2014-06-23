@@ -276,8 +276,8 @@ if(class_exists('Adobe_Analytics')) {
 
     //adds our header javascript on non-admin pages
     if (!is_admin()) {
-      add_action('init', array('Adobe_Analytics', 'init'));
-      add_action( 'wp_print_footer_scripts', array('Adobe_Analytics', 'script'), 50 );
+      add_action('init', array(&$adobe_analytics, 'init'));
+      add_action( 'wp_print_footer_scripts', array(&$adobe_analytics, 'script'), 50 );
     }
   }
 }
