@@ -21,6 +21,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       register_setting('adobe_analytics-group', 'adobe_analytics_custom_variables'); //custom js to add to the page
 	  register_setting('adobe_analytics-group', 'adobe_analytics_custom_js_before_omniture' );//custom js before omniture
 	  register_setting('adobe_analytics-group', 'adobe_analytics_pageName_js' );//pageName js
+	  register_setting('adobe_analytics-group', 'adobe_analytics_pageName_old_logic');//pageName old logic checkbox
 
       // add your settings section
       add_settings_section(
@@ -91,6 +92,18 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           'description' => 'Javascript used to determine pageName variable.<br /> If left blank, the pageName will have the form "Blog Title:url:path" where : is substituted for /.<br />For example, Example Blog at http://wwww.example.com/blog/category/something will have  s.pageName of the form "Example Blog:category:something"<br/><strong>Be sure to explicitly declare value for s.pageName.</strong><br />Javascript code for s.pageName does not take place within its own script block. Do not include script tags.<br />Alternatively add_filter(\'bb_adobe_analytics_pageName\') can be used in the theme.<br />WARNING: Risk of XSS - Use at your own risk!'
           )
         );
+        add_settings_field(
+          'adobe_analytics_pageName_old_logic',
+          '',
+          array($this, 'settings_field_input_checkbox'),
+          'adobe_analytics',
+          'adobe_analytics-section',
+          array(
+            'field' => 'adobe_analytics_pageName_old_logic',
+            'type' => 'checkbox',
+            'description' => 'Use logic for pageName variable according to Adobe Analytics version <= to 0.6.8.<br /><strong>If checked will override all other pageName logic.</strong>'
+            )
+          );
       add_settings_field(
         'adobe_analytics-custom_variables',
         'Custom Variables',
@@ -131,6 +144,16 @@ if(!class_exists('Adobe_Analytics_Settings')) {
         break;
       }
     } // END public function settings_field_input_text($args)
+	
+	public function settings_field_input_checkbox($args) {
+		$field = $args['field'];
+		$type = $args['type'];
+		$description = $args['description'];
+		$value = get_option($field, 1);
+		
+		echo sprintf('<input type="checkbox" id="%s" name="%s" value="1" ', $field, $field) . checked(1, $value, false) . '/>';
+		echo sprintf('<label for="%s">%s</label>', $field, $description);
+	}
 
     /**
      * add a menu
