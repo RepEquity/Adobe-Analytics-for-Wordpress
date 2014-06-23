@@ -90,7 +90,15 @@ if(!class_exists('Adobe_Analytics'))
 
       //the tracking script
       ?><script type="text/javascript">
-        s = new AppMeasurement(); //initialize library as s
+		if(typeof(s) === 'undefined')
+		{
+			if(typeof(AppMeasurement) === 'undefined')
+			{
+				s = s_gi(s_account);
+			}else{
+				s = new AppMeasurement();
+			}
+		}
         s.account="<?php echo $vars['app_id']; ?>" //sets metric accounts
         <?php echo $vars['custom_js']; ?> //adds custom js from settings page (ie. plugins etc..)
         s.pageName="<?php echo $vars['page_title']; ?>" //page title variable
