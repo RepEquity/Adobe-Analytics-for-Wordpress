@@ -247,6 +247,17 @@ if(!class_exists('Adobe_Analytics'))
         return $page_vars;
       }
     }
+	
+	public function custom_pre_library_js () {
+		
+		if ( get_option( 'bb_adobe_analytics_custom_js_before_omniture' ) ) {
+			
+			echo "<script>";
+			echo get_option( 'bb_adobe_analytics_custom_js_before_omniture' );
+			echo "</script>";
+		}
+			
+	}//END funcion bb_custom_pre_js
 
 
   } // END class Adobe_Analytics
@@ -277,6 +288,7 @@ if(class_exists('Adobe_Analytics')) {
     //adds our header javascript on non-admin pages
     if (!is_admin()) {
       add_action('init', array(&$adobe_analytics, 'init'));
+	  add_action( 'wp_print_footer_scripts', array( &$adobe_analytics, 'custom_pre_library_js'), 5);
       add_action( 'wp_print_footer_scripts', array(&$adobe_analytics, 'script'), 50 );
     }
   }
