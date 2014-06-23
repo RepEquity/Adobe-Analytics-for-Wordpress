@@ -6,8 +6,8 @@ if(!class_exists('Adobe_Analytics_Settings')) {
      */
     public function __construct() {
       // register actions
-      add_action('admin_init', array(&$this, 'admin_init'));
-      add_action('admin_menu', array(&$this, 'add_menu'));
+      add_action('admin_init', array($this, 'admin_init'));
+      add_action('admin_menu', array($this, 'add_menu'));
     } // END public function __construct
 
     /**
@@ -24,7 +24,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_section(
         'adobe_analytics-section',
         'WP Adobe Analytics Settings',
-        array(&$this, 'settings_section_adobe_analytics'),
+        array($this, 'settings_section_adobe_analytics'),
         'adobe_analytics'
         );
 
@@ -32,7 +32,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-library_url',
         'Library URL',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -44,7 +44,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-account_id',
         'Account ID',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -56,7 +56,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-custom_js',
         'Custom JS',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -68,7 +68,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-custom_variables',
         'Custom Variables',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -115,7 +115,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
         'Adobe Analytics',
         'manage_options',
         'adobe_analytics',
-        array(&$this, 'plugin_settings_page')
+        array($this, 'plugin_settings_page')
         );
     } // END public function add_menu()
 
