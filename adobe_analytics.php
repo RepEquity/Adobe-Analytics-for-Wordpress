@@ -67,34 +67,31 @@ if(!class_exists('Adobe_Analytics'))
       $vars['custom_variables'] = get_option('adobe_analytics_custom_variables');
       $vars['page_type'] = self::page_type();
 
-      //on-page configs
-      // $vars['url'] = get_permalink();
-      $vars['post_title'] = get_the_title();
-      $vars['archive_title'] = single_cat_title('', false);
-      if (is_home()) {
-        $vars['page_title'] = 'Home Page';
-      } elseif (is_page()) {
-        $vars['page_title'] = the_title('', '', false);
-      } elseif (is_single()) {
-        $vars['page_title'] = the_title('', '', false);
-      } elseif (is_category()) {
-        $vars['page_title'] = 'Category: ' . single_cat_title('', false);
-      } elseif (is_tag()) {
-        $vars['page_title'] = 'Tag: ' . single_tag_title('', false);
-      } elseif (is_month()) {
-        list($month, $year) = split(' ', the_date('F Y', '', '', false));
-        $vars['page_title'] = 'Month Archive: ' . $month . ' ' . $year;
-      // } elseif (is_404()) {
-      //   $vars['page_title'] = 'errorPage';
-      }
-
       //the tracking script
       ?><script type="text/javascript">
-        s = new AppMeasurement(); //initialize library as s
+		if(typeof(s) === 'undefined')
+		{
+			if(typeof(AppMeasurement) === 'undefined')
+			{
+				s = s_gi(s_account);
+			}else{
+				s = new AppMeasurement();
+			}
+		}
         s.account="<?php echo $vars['app_id']; ?>" //sets metric accounts
-        <?php echo $vars['custom_js']; ?> //adds custom js from settings page (ie. plugins etc..)
-        s.pageName="<?php echo $vars['page_title']; ?>" //page title variable
+        <?php echo $vars['custom_js']; ?> 
+		<?php if ( get_option( 'adobe_analytics_pageName_js') ) {
+			
+			echo get_option( 'adobe_analytics_pageName_js' );
+			
+		} else {
+			
+		?>
+		//adds custom js from settings page (ie. plugins etc..)
+        s.pageName="<?php echo self::pageName(); ?>" //page title variable
         <?php
+		} //end else condition
+		
         /**
          * Handling of custom variables
          */
@@ -247,6 +244,65 @@ if(!class_exists('Adobe_Analytics'))
         return $page_vars;
       }
     }
+	
+	public function pageName () {
+		
+		//check if we use pageName logic for version <= 0.6.8 version of Adobe Analytics
+		if (get_option('adobe_analytics_pageName_old_logic')) {
+			return $pageName = $this->pageName_backwards_compatible();
+		}
+		
+		$pageName = "";
+		$parse_path = "";
+		$pageName = bloginfo('name');
+		if ( !is_home() ) {
+			
+			$parse_path = $_SERVER["REQUEST_URI"];
+			$parse_path = substr($parse_path, 1); //remove first /
+			$parse_path = strstr($parse_path, "/"); //remove everything prior to next /
+			$parse_path = str_replace("/", ":", $parse_path); //substitute : for / in the remainder of the path
+			$pageName .= $parse_path;
+		}
+		
+		$pageName = apply_filters('adobe_analytics_pageName', $pageName);
+		return $pageName;
+	}// end public function pageName
+	
+	public function pageName_backwards_compatible() {
+		
+		$vars = array();
+        $vars['post_title'] = get_the_title();
+        $vars['archive_title'] = single_cat_title('', false);
+        if (is_home()) {
+          $vars['page_title'] = 'Home Page';
+        } elseif (is_page()) {
+          $vars['page_title'] = the_title('', '', false);
+        } elseif (is_single()) {
+          $vars['page_title'] = the_title('', '', false);
+        } elseif (is_category()) {
+          $vars['page_title'] = 'Category: ' . single_cat_title('', false);
+        } elseif (is_tag()) {
+          $vars['page_title'] = 'Tag: ' . single_tag_title('', false);
+        } elseif (is_month()) {
+          list($month, $year) = split(' ', the_date('F Y', '', '', false));
+          $vars['page_title'] = 'Month Archive: ' . $month . ' ' . $year;
+        // } elseif (is_404()) {
+        //   $vars['page_title'] = 'errorPage';
+        }
+		
+		return $vars['page_title'];
+	} //END public function pageName_backwards_compatible
+	
+	public function custom_pre_library_js () {
+		
+		if ( get_option( 'adobe_analytics_custom_js_before_omniture' ) ) {
+			
+			echo "<script>";
+			echo get_option( 'adobe_analytics_custom_js_before_omniture' );
+			echo "</script>";
+		}
+			
+	}//END funcion bb_custom_pre_js
 
 
   } // END class Adobe_Analytics
@@ -276,8 +332,9 @@ if(class_exists('Adobe_Analytics')) {
 
     //adds our header javascript on non-admin pages
     if (!is_admin()) {
-      add_action('init', array('Adobe_Analytics', 'init'));
-      add_action( 'wp_print_footer_scripts', array('Adobe_Analytics', 'script'), 50 );
+      add_action('init', array(&$adobe_analytics, 'init'));
+	  add_action( 'wp_print_footer_scripts', array( &$adobe_analytics, 'custom_pre_library_js'), 5);
+      add_action( 'wp_print_footer_scripts', array(&$adobe_analytics, 'script'), 50 );
     }
   }
 }

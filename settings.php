@@ -6,8 +6,8 @@ if(!class_exists('Adobe_Analytics_Settings')) {
      */
     public function __construct() {
       // register actions
-      add_action('admin_init', array(&$this, 'admin_init'));
-      add_action('admin_menu', array(&$this, 'add_menu'));
+      add_action('admin_init', array($this, 'admin_init'));
+      add_action('admin_menu', array($this, 'add_menu'));
     } // END public function __construct
 
     /**
@@ -19,12 +19,15 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       register_setting('adobe_analytics-group', 'adobe_analytics_account_id'); //
       register_setting('adobe_analytics-group', 'adobe_analytics_custom_js'); //custom js to add to the page
       register_setting('adobe_analytics-group', 'adobe_analytics_custom_variables'); //custom js to add to the page
+	  register_setting('adobe_analytics-group', 'adobe_analytics_custom_js_before_omniture' );//custom js before omniture
+	  register_setting('adobe_analytics-group', 'adobe_analytics_pageName_js' );//pageName js
+	  register_setting('adobe_analytics-group', 'adobe_analytics_pageName_old_logic');//pageName old logic checkbox
 
       // add your settings section
       add_settings_section(
         'adobe_analytics-section',
         'WP Adobe Analytics Settings',
-        array(&$this, 'settings_section_adobe_analytics'),
+        array($this, 'settings_section_adobe_analytics'),
         'adobe_analytics'
         );
 
@@ -32,7 +35,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-library_url',
         'Library URL',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -44,7 +47,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       add_settings_field(
         'adobe_analytics-account_id',
         'Account ID',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -54,9 +57,21 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           )
         );
       add_settings_field(
+          'adobe_analytics_custom_js_before_omniture',
+          'Custom JS Before Adobe Analytics Script Called',
+          array($this, 'settings_field_input_text'),
+          'adobe_analytics',
+          'adobe_analytics-section',
+          array(
+            'field' => 'adobe_analytics_custom_js_before_omniture',
+            'type' => 'textarea',
+            'description' => 'Add custom javascript block here to be run prior to the s_code.js file. Do not include script tags.<br/>WARNING: Risk of XSS - Use at your own risk!'
+            )
+        );
+      add_settings_field(
         'adobe_analytics-custom_js',
         'Custom JS',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -66,9 +81,33 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           )
         );
       add_settings_field(
+        'adobe_analytics_pageName_js',
+        'pageName',
+        array($this, 'settings_field_input_text'),
+        'adobe_analytics',
+        'adobe_analytics-section',
+        array(
+          'field' => 'adobe_analytics_pageName_js',
+          'type' => 'textarea',
+          'description' => 'Javascript used to determine pageName variable.<br /> If left blank, the pageName will have the form "Blog Title:url:path" where : is substituted for /.<br />For example, Example Blog at http://wwww.example.com/blog/category/something will have  s.pageName of the form "Example Blog:category:something"<br/><strong>Be sure to explicitly declare value for s.pageName.</strong><br />Javascript code for s.pageName does not take place within its own script block. Do not include script tags.<br />Alternatively add_filter(\'adobe_analytics_pageName\') can be used in the theme.<br />WARNING: Risk of XSS - Use at your own risk!'
+          )
+        );
+        add_settings_field(
+          'adobe_analytics_pageName_old_logic',
+          '',
+          array($this, 'settings_field_input_checkbox'),
+          'adobe_analytics',
+          'adobe_analytics-section',
+          array(
+            'field' => 'adobe_analytics_pageName_old_logic',
+            'type' => 'checkbox',
+            'description' => 'Use logic for pageName variable according to Adobe Analytics version <= to 0.6.8.<br /><strong>If checked will override all other pageName logic.</strong>'
+            )
+          );
+      add_settings_field(
         'adobe_analytics-custom_variables',
         'Custom Variables',
-        array(&$this, 'settings_field_input_text'),
+        array($this, 'settings_field_input_text'),
         'adobe_analytics',
         'adobe_analytics-section',
         array(
@@ -77,6 +116,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           'description' => 'Serialized array of custom global variables. Only visible during testing.'
           )
         );
+		  
     }
 
     public function settings_section_adobe_analytics() {
@@ -104,6 +144,16 @@ if(!class_exists('Adobe_Analytics_Settings')) {
         break;
       }
     } // END public function settings_field_input_text($args)
+	
+	public function settings_field_input_checkbox($args) {
+		$field = $args['field'];
+		$type = $args['type'];
+		$description = $args['description'];
+		$value = get_option($field, 1);
+		
+		echo sprintf('<input type="checkbox" id="%s" name="%s" value="1" ', $field, $field) . checked(1, $value, false) . '/>';
+		echo sprintf('<label for="%s">%s</label>', $field, $description);
+	}
 
     /**
      * add a menu
@@ -115,7 +165,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
         'Adobe Analytics',
         'manage_options',
         'adobe_analytics',
-        array(&$this, 'plugin_settings_page')
+        array($this, 'plugin_settings_page')
         );
     } // END public function add_menu()
 
