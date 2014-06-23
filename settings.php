@@ -19,6 +19,8 @@ if(!class_exists('Adobe_Analytics_Settings')) {
       register_setting('adobe_analytics-group', 'adobe_analytics_account_id'); //
       register_setting('adobe_analytics-group', 'adobe_analytics_custom_js'); //custom js to add to the page
       register_setting('adobe_analytics-group', 'adobe_analytics_custom_variables'); //custom js to add to the page
+	  register_setting('adobe_analytics-group', 'adobe_analytics_custom_js_before_omniture' );//custom js before omniture
+	  register_setting('adobe_analytics-group', 'adobe_analytics_pageName_js' );//pageName js
 
       // add your settings section
       add_settings_section(
@@ -54,6 +56,18 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           )
         );
       add_settings_field(
+          'adobe_analytics_custom_js_before_omniture',
+          'Custom JS Before Adobe Analytics Script Called',
+          array($this, 'settings_field_input_text'),
+          'adobe_analytics',
+          'adobe_analytics-section',
+          array(
+            'field' => 'adobe_analytics_custom_js_before_omniture',
+            'type' => 'textarea',
+            'description' => 'Add custom javascript block here to be run prior to the s_code.js file. Do not include script tags.<br/>WARNING: Risk of XSS - Use at your own risk!'
+            )
+        );
+      add_settings_field(
         'adobe_analytics-custom_js',
         'Custom JS',
         array($this, 'settings_field_input_text'),
@@ -63,6 +77,18 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           'field' => 'adobe_analytics_custom_js',
           'type' => 'textarea',
           'description' => 'Add custom javascript block here (ie. plugin code). Do not include script tags.<br/>WARNING: Risk of XSS - Use at your own risk!'
+          )
+        );
+      add_settings_field(
+        'adobe_analytics_pageName_js',
+        'pageName',
+        array($this, 'settings_field_input_text'),
+        'adobe_analytics',
+        'adobe_analytics-section',
+        array(
+          'field' => 'adobe_analytics_pageName_js',
+          'type' => 'textarea',
+          'description' => 'Javascript used to determine pageName variable.<br /> If left blank, the pageName will have the form "Blog Title:url:path" where : is substituted for /.<br />For example, Example Blog at http://wwww.example.com/blog/category/something will have  s.pageName of the form "Example Blog:category:something"<br/><strong>Be sure to explicitly declare value for s.pageName.</strong><br />Javascript code for s.pageName does not take place within its own script block. Do not include script tags.<br />Alternatively add_filter(\'bb_adobe_analytics_pageName\') can be used in the theme.<br />WARNING: Risk of XSS - Use at your own risk!'
           )
         );
       add_settings_field(
@@ -77,6 +103,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
           'description' => 'Serialized array of custom global variables. Only visible during testing.'
           )
         );
+		  
     }
 
     public function settings_section_adobe_analytics() {
