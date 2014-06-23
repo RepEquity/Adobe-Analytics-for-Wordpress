@@ -67,27 +67,6 @@ if(!class_exists('Adobe_Analytics'))
       $vars['custom_variables'] = get_option('adobe_analytics_custom_variables');
       $vars['page_type'] = self::page_type();
 
-      //on-page configs
-      // $vars['url'] = get_permalink();
-      $vars['post_title'] = get_the_title();
-      $vars['archive_title'] = single_cat_title('', false);
-      if (is_home()) {
-        $vars['page_title'] = 'Home Page';
-      } elseif (is_page()) {
-        $vars['page_title'] = the_title('', '', false);
-      } elseif (is_single()) {
-        $vars['page_title'] = the_title('', '', false);
-      } elseif (is_category()) {
-        $vars['page_title'] = 'Category: ' . single_cat_title('', false);
-      } elseif (is_tag()) {
-        $vars['page_title'] = 'Tag: ' . single_tag_title('', false);
-      } elseif (is_month()) {
-        list($month, $year) = split(' ', the_date('F Y', '', '', false));
-        $vars['page_title'] = 'Month Archive: ' . $month . ' ' . $year;
-      // } elseif (is_404()) {
-      //   $vars['page_title'] = 'errorPage';
-      }
-
       //the tracking script
       ?><script type="text/javascript">
 		if(typeof(s) === 'undefined')
@@ -268,6 +247,10 @@ if(!class_exists('Adobe_Analytics'))
 	
 	public function pageName () {
 		
+		//check if we use pageName logic for version <= 0.6.8 version of Adobe Analytics
+		if (get_option('adobe_analytics_pageName_old_logic')) {
+			return $pageName = $this->pageName_backwards_compatible();
+		}
 		
 		$pageName = "";
 		$parse_path = "";
@@ -284,6 +267,31 @@ if(!class_exists('Adobe_Analytics'))
 		$pageName = apply_filters('adobe_analytics_pageName', $pageName);
 		return $pageName;
 	}// end public function pageName
+	
+	public function pageName_backwards_compatible() {
+		
+		$vars = array();
+        $vars['post_title'] = get_the_title();
+        $vars['archive_title'] = single_cat_title('', false);
+        if (is_home()) {
+          $vars['page_title'] = 'Home Page';
+        } elseif (is_page()) {
+          $vars['page_title'] = the_title('', '', false);
+        } elseif (is_single()) {
+          $vars['page_title'] = the_title('', '', false);
+        } elseif (is_category()) {
+          $vars['page_title'] = 'Category: ' . single_cat_title('', false);
+        } elseif (is_tag()) {
+          $vars['page_title'] = 'Tag: ' . single_tag_title('', false);
+        } elseif (is_month()) {
+          list($month, $year) = split(' ', the_date('F Y', '', '', false));
+          $vars['page_title'] = 'Month Archive: ' . $month . ' ' . $year;
+        // } elseif (is_404()) {
+        //   $vars['page_title'] = 'errorPage';
+        }
+		
+		return $vars['page_title'];
+	} //END public function pageName_backwards_compatible
 	
 	public function custom_pre_library_js () {
 		
