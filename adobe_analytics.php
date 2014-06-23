@@ -100,9 +100,19 @@ if(!class_exists('Adobe_Analytics'))
 			}
 		}
         s.account="<?php echo $vars['app_id']; ?>" //sets metric accounts
-        <?php echo $vars['custom_js']; ?> //adds custom js from settings page (ie. plugins etc..)
-        s.pageName="<?php echo $vars['page_title']; ?>" //page title variable
+        <?php echo $vars['custom_js']; ?> 
+		<?php if ( get_option( 'adobe_analytics_pageName_js') ) {
+			
+			echo get_option( 'adobe_analytics_pageName_js' );
+			
+		} else {
+			
+		?>
+		//adds custom js from settings page (ie. plugins etc..)
+        s.pageName="<?php echo self::pageName(); ?>" //page title variable
         <?php
+		} //end else condition
+		
         /**
          * Handling of custom variables
          */
@@ -256,12 +266,31 @@ if(!class_exists('Adobe_Analytics'))
       }
     }
 	
+	public function pageName () {
+		
+		
+		$pageName = "";
+		$parse_path = "";
+		$pageName = bloginfo('name');
+		if ( !is_home() ) {
+			
+			$parse_path = $_SERVER["REQUEST_URI"];
+			$parse_path = substr($parse_path, 1); //remove first /
+			$parse_path = strstr($parse_path, "/"); //remove everything prior to next /
+			$parse_path = str_replace("/", ":", $parse_path); //substitute : for / in the remainder of the path
+			$pageName .= $parse_path;
+		}
+		
+		$pageName = apply_filters('adobe_analytics_pageName', $pageName);
+		return $pageName;
+	}// end public function pageName
+	
 	public function custom_pre_library_js () {
 		
-		if ( get_option( 'bb_adobe_analytics_custom_js_before_omniture' ) ) {
+		if ( get_option( 'adobe_analytics_custom_js_before_omniture' ) ) {
 			
 			echo "<script>";
-			echo get_option( 'bb_adobe_analytics_custom_js_before_omniture' );
+			echo get_option( 'adobe_analytics_custom_js_before_omniture' );
 			echo "</script>";
 		}
 			
