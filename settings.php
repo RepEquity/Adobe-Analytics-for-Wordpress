@@ -89,7 +89,7 @@ if(!class_exists('Adobe_Analytics_Settings')) {
         array(
           'field' => 'adobe_analytics_pageName_js',
           'type' => 'textarea',
-          'description' => 'Javascript used to determine pageName variable.<br /> If left blank, the pageName will have the form "Blog Title:url:path" where : is substituted for /.<br />For example, Example Blog at http://wwww.example.com/blog/category/something will have  s.pageName of the form "Example Blog:category:something"<br/><strong>Be sure to explicitly declare value for s.pageName.</strong><br />Javascript code for s.pageName does not take place within its own script block. Do not include script tags.<br />Alternatively add_filter(\'bb_adobe_analytics_pageName\') can be used in the theme.<br />WARNING: Risk of XSS - Use at your own risk!'
+          'description' => 'Javascript used to determine pageName variable.<br /> If left blank, the pageName will have the form "Blog Title:url:path" where : is substituted for /.<br />For example, Example Blog at http://wwww.example.com/blog/category/something will have  s.pageName of the form "Example Blog:category:something"<br/><strong>Be sure to explicitly declare value for s.pageName.</strong><br />Javascript code for s.pageName does not take place within its own script block. Do not include script tags.<br />Alternatively add_filter(\'adobe_analytics_pageName\') can be used in the theme.<br />WARNING: Risk of XSS - Use at your own risk!'
           )
         );
         add_settings_field(
