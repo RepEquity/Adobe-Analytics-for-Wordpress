@@ -62,24 +62,12 @@
         <h2>Settings</h2>
         <p>These settings determine the basic reporting to the Adobe Analytics (formerly Omniture SiteCatalyst).</p><br/>
         <form method="post" action="options.php">
-          <?php settings_fields('adobe_analytics-group'); ?>
+          <?php
+		  	settings_fields('adobe_analytics-group'); 
+		  	do_settings_sections('adobe_analytics');
+		  ?>
 
-          <div class="form-field libray_url"><label for="adobe_analytics_library_url">Library URL</label>
-          <input type="text" name="adobe_analytics_library_url" id="adobe_analytics_library_url" value="<?php echo get_option('adobe_analytics_library_url'); ?>" size="50">
-          <p>Can be external url or absolute path to AppMeasurement.js or s_code.js library.<br>Should be UNALTERED version of the library. Alterations can be added in the "Custom JS" field.</p></div>
-
-          <div class="form-field account_id"><label for="adobe_analytics_account_id">Account ID</label>
-          <input type="text" name="adobe_analytics_account_id" id="adobe_analytics_account_id" value="<?php echo get_option('adobe_analytics_account_id'); ?>" size="50">
-          <p>The reporting suite where the data is saved to.</p></div>
-
-          <div class="form-field custom_js"><label for="adobe_analytics_custom_js">Custom JS</label>
-          <textarea name="adobe_analytics_custom_js" id="adobe_analytics_custom_js" rows="5" cols="50"><?php echo htmlspecialchars(get_option('adobe_analytics_custom_js')); ?></textarea>
-          <p>Add custom javascript block here (ie. plugin code). Do not include script tags.<br>WARNING: Risk of XSS - Use at your own risk!</p></div>
-
-          <div class="form-field custom_variables"><label for="adobe_analytics_custom_variables">Custom Variables</label>
-          <input type="text" name="adobe_analytics_custom_variables" id="adobe_analytics_custom_variables" value="<?php echo htmlspecialchars(get_option('adobe_analytics_custom_variables')); ?>" size="50">
-          <p>Serialized array of custom global variables. Only visible during testing.</p></div>
-
+         
           <legend>All Global Variables</legend>
           <fieldset name="variables" class="repeatable-wrap">
             <ul id="tracks-repeatable" class="repeatable-fields-list">
